@@ -1,323 +1,242 @@
-import java.util.Scanner;
-
 public class Date {
 
 	private int day;
 	private String month;
 	private int year;
 
-// Constructor-1 (without parameters) initialize date to a default value (day, month and year)
+// Constructor-1 (without parameters) initialise date to a default value (day, month and year)
 	public Date() {
 		day = 27;
 		month = "June";
 		year = 1990;
 	}
 
-// Constructor-2 (with parameters) validates date and assign the date (day, month and year)- if validated
-	public Date(int cDay, String cMonth, int cYear) {
-		// Validate Date (day, month and year) using setDate
-		setDate(cMonth, cDay, cYear);
+// Constructor-2 (monthString, day, year) Validate and Initialise the properties (date) (day, month and year)- if validated
+	public Date(String monthString, int day, int year) {
+		setDate(monthString, day, year); // Validates and sets the properties
 	}
 
-// Constructor-3 (with parameters) validates the parameters and initialize the properties.
-	public Date(int iMonth, int iDay, int iYear) {
-		// Validate Date (day, month and year) using setDate
-		setDate(iMonth, iDay, iYear);
+// Constructor-3 (monthInt, day, year) Validate and Initialise the properties.
+	public Date(int monthInt, int day, int year) {
+		setDate(monthInt, day, year); // Convert monthInt to monthString, validate, and set the properties
 	}
 
-	Scanner in = new Scanner(System.in);
+// Validate date (monthString, day, year)
+	public boolean validateDate(String monthString, int day, int year) {
+		if (day < 1 || day > 31)
+			return false;
+		if (year < 1000 || year > 9999)
+			return false;
+		if (month.equalsIgnoreCase("February") && (day > 29)) // 29 is true if it is leap year- Special method is dateOK
+			return false;
+		if (!validateMonthStr(monthString))
+			return false;
+		return true;
+	}
 
-	// Validate date (day, month and year)
-	public boolean validateDate(int vDay, String vMonth, int vYear) {
+// Validate date (montInt, day, year)
+	public boolean validateDate(int monthInt, int day, int year) {
 		boolean state = false;
-		String[] validMonths = { "January", "Feburary", "March", "April", "May", "June", "July", "August", "September",
-				"October", "November", "December" };
-		if (vDay >= 1 && vDay <= 31) {
-			state = true;
-		} else {
-			state = false;
-		}
-		if (vYear >= 1000 && vYear <= 9999) {
-			state = true;
-		} else {
-			state = false;
-		}
-		for (int i = 0; i < 12; i++) {
-			if (vMonth.equalsIgnoreCase(validMonths[i])) {
-				state = true;
-				break;
-			} else {
-				state = false;
-			}
-		}
-
-		return state;
+		if (monthInt < 1 || monthInt > 12)
+			return state;
+		if (day < 1 || day > 31)
+			return state;
+		if (year < 1000 || year > 9999)
+			return state;
+		if (monthInt == 2 && day > 29) // 29 is true if it is leap year- Special method is dateOK
+			return state;
+		return !state;
 	}
 
-	// Return true when other date has the same day, month and year
-	public boolean equals(Date d, Date e) {
-		boolean state = true;
-
-		if (d.day != e.day) {
-			state = false;
-			return state;
-		}
-		if (d.year != e.year) {
-			state = false;
-			return state;
-		}
-		if (!d.month.equalsIgnoreCase(e.month)) {
-			state = false;
-			return state;
-		}
-		return state;
-	}
-
-	// Convert an integer month to its corresponding name
-	private String monthString(int iMonth) {
-		String a_Month = "";
-		if (iMonth < 0 || iMonth > 13) {
-			System.out.println("Enter data is not as per required parameters");
-			System.exit(0);
-		} else {
-			switch (iMonth) {
-			case 1:
-				a_Month = "January";
-				break;
-			case 2:
-				a_Month = "Feburary";
-				break;
-			case 3:
-				a_Month = "March";
-				break;
-			case 4:
-				a_Month = "April";
-				break;
-			case 5:
-				a_Month = "May";
-				break;
-			case 6:
-				a_Month = "June";
-				break;
-			case 7:
-				a_Month = "July";
-				break;
-			case 8:
-				a_Month = "August";
-				break;
-			case 9:
-				a_Month = "September";
-				break;
-			case 10:
-				a_Month = "October";
-				break;
-			case 11:
-				a_Month = "November";
-				break;
-			case 12:
-				a_Month = "December";
-				break;
-			}
-
-		}
-		return a_Month;
-	}
-
-	// Validate if the actual parameters represent a valid date
-
-	private boolean dateOK(String aMonth, int aDay, int aYear) {
+// Return true when other date has the same day, month and year. month is in string format.
+	public boolean equals(Date otherDate) {
 		boolean state = false;
-		String[] validMonths = { "January", "Feburary", "March", "April", "May", "June", "July", "August", "September",
-				"October", "November", "December" };
-		if (aDay >= 1 && aDay <= 31) {
-			state = true;
-		}
-		if (aYear >= 1000 && aYear <= 9999) {
-			state = true;
-		}
-		for (int i = 0; i < 12; i++) {
-			if (aMonth.equalsIgnoreCase(validMonths[i])) {
-				state = true;
-				break;
-			}
-		}
-		// Check for Leap year
-		// if(aMonth.equalsIgnoreCase("February") && aYear%4 == 0)
-		return state;
+		if (this.day != otherDate.day)
+			return state;
+		if (this.year != otherDate.year)
+			return state;
+		if (!this.month.equalsIgnoreCase(otherDate.month))
+			return state;
+		return !state;
 	}
 
-	// Validate the actual parameters and set the values of the properties- like
-	// Constructor-3 (int, int, int)
-	public void setDate(int iMonth, int iDay, int iYear) {
-		String s_Month = monthString(iMonth); // Converts integer month to string month, example- 1 to January, 2 to
-												// February and so on
-		boolean valid = dateOK(s_Month, iDay, iYear); // Validates the data
-		if (valid) { // Initialize the properties, if validated
-			day = iDay;
-			month = s_Month;
-			year = iYear;
-		} else {
-			System.out.println("Enter data is not as per required parameters or with in the date range");
-			System.exit(0);
+// Converts monthInt to monthString (example 1 to January, and so on)
+	private String monthStr(int monthInt) {
+		String monthString = "";
+		switch (monthInt) {
+		case 1:
+			monthString = "January";
+			break;
+		case 2:
+			monthString = "Feburary";
+			break;
+		case 3:
+			monthString = "March";
+			break;
+		case 4:
+			monthString = "April";
+			break;
+		case 5:
+			monthString = "May";
+			break;
+		case 6:
+			monthString = "June";
+			break;
+		case 7:
+			monthString = "July";
+			break;
+		case 8:
+			monthString = "August";
+			break;
+		case 9:
+			monthString = "September";
+			break;
+		case 10:
+			monthString = "October";
+			break;
+		case 11:
+			monthString = "November";
+			break;
+		case 12:
+			monthString = "December";
+			break;
 		}
-
+		return monthString;
 	}
 
-	// Validate the actual parameters and set the values of the properties- like
-	// Constructor-2 (String, int, int)
-	public void setDate(String cMonth, int cDay, int cYear) {
-		// validate Date (day, month and year)
-		boolean valid = validateDate(cDay, cMonth, cYear);
-		if (valid) {
-			day = cDay;
-			month = cMonth;
-			year = cYear;
-		} else {
-			System.out.println("Enter data is not as per required parameters or with in the date range");
-			System.exit(0);
-		}
-
+// Converts monthString to monthInt
+	private int iMonth(String monthString) {
+		int monthInt = 0; // returns 0 in case of monthString is null or invalid
+		if (monthString.equalsIgnoreCase("January"))
+			monthInt = 1;
+		if (monthString.equalsIgnoreCase("February"))
+			monthInt = 2;
+		if (monthString.equalsIgnoreCase("March"))
+			monthInt = 3;
+		if (monthString.equalsIgnoreCase("April"))
+			monthInt = 4;
+		if (monthString.equalsIgnoreCase("May"))
+			monthInt = 5;
+		if (monthString.equalsIgnoreCase("June"))
+			monthInt = 6;
+		if (monthString.equalsIgnoreCase("July"))
+			monthInt = 7;
+		if (monthString.equalsIgnoreCase("August"))
+			monthInt = 8;
+		if (monthString.equalsIgnoreCase("September"))
+			monthInt = 9;
+		if (monthString.equalsIgnoreCase("October"))
+			monthInt = 10;
+		if (monthString.equalsIgnoreCase("November"))
+			monthInt = 11;
+		if (monthString.equalsIgnoreCase("December"))
+			monthInt = 12;
+		return monthInt;
 	}
 
-	// Getters
+// Validates date (monthString)- "validateDate" plus check for leap year (if day = 29, monthString = February, and leapYear- date is OK)
+	private boolean dateOK(String monthString, int day, int year) {
+		boolean valid = validateDate(monthString, day, year);
+		if (valid && monthString.equalsIgnoreCase("February")) { // check for leap year if February
+			boolean leapYear = false;
+			if ((year % 4) == 0 && (year % 100) != 0)
+				leapYear = true;
+			if ((year % 100 == 0) && (year % 400 == 0))
+				leapYear = true;
+			if ((!leapYear) && (day == 29)) // return false- if its not a leap year and day is 29 in February
+				valid = false;
+		}
+		return valid;
+	}
+
+// Validates date (monthInt)- "validateDate" plus check for leap year (if day = 29, monthInt = 2, and leapYear- date is OK)
+	private boolean dateOK(int monthInt, int day, int year) {
+		boolean valid = validateDate(monthInt, day, year);
+		if (valid && (monthInt == 2)) { // check for leap year if monthInt = 2
+			boolean leapYear = false;
+			if ((year % 4) == 0 && (year % 100) != 0)
+				leapYear = true;
+			if ((year % 100 == 0) && (year % 400 == 0))
+				leapYear = true;
+			if ((!leapYear) && (day == 29)) // return false- if its not a leap year and day is 29 in February
+				valid = false;
+		}
+		return valid;
+	}
+
+// Setter- Sets the date (monthInt, day, year)
+	public void setDate(int monthInt, int day, int year) {
+		boolean valid = validateDate(monthInt, day, year); // Validates date
+		if (valid == true) { // If valid- initialise, else print error
+			String monthString = monthStr(monthInt); // Convert monthInt to monthString
+			this.month = monthString; // initialise
+			this.day = day;
+			this.year = year;
+		} else
+			System.out.println("Error in input data");
+	}
+
+// Setter- Sets the date (monthString, day, year)
+	public void setDate(String monthString, int day, int year) {
+		boolean valid = validateDate(monthString, day, year); // Validates date
+		if (valid == true) { // If valid, else print error
+			this.month = monthString;
+			this.day = day;
+			this.year = year;
+		} else
+			System.out.println("Error in input data");
+	}
+
+// 3 Getters - day, year, and monthInt
 	public int getDay() {
-		return day;
+		return this.day;
 	}
 
 	public int getYear() {
-		return year;
+		return this.year;
 	}
 
-	public int getMonth() {
-		int iMonth = 0;
-		if (month.equalsIgnoreCase("January")) {
-			iMonth = 1;
-		}
-		if (month.equalsIgnoreCase("February")) {
-			iMonth = 2;
-		}
-		if (month.equalsIgnoreCase("March")) {
-			iMonth = 3;
-		}
-		if (month.equalsIgnoreCase("April")) {
-			iMonth = 4;
-		}
-		if (month.equalsIgnoreCase("May")) {
-			iMonth = 5;
-		}
-		if (month.equalsIgnoreCase("June")) {
-			iMonth = 6;
-		}
-		if (month.equalsIgnoreCase("July")) {
-			iMonth = 7;
-		}
-		if (month.equalsIgnoreCase("August")) {
-			iMonth = 8;
-		}
-		if (month.equalsIgnoreCase("September")) {
-			iMonth = 9;
-		}
-		if (month.equalsIgnoreCase("October")) {
-			iMonth = 10;
-		}
-		if (month.equalsIgnoreCase("November")) {
-			iMonth = 11;
-		}
-		if (month.equalsIgnoreCase("December")) {
-			iMonth = 12;
-		}
-
-		if (iMonth == 0) {
-			System.out.println("Enter data is not as per required parameters or with in the date range");// month is not
-																											// initiated
-			System.exit(0);
-		}
-		return iMonth;
+	public int getMonth() { // Returns monthInt and not monthString
+		return iMonth(this.month);
 	}
 
-	// Setters
-	public void setDay(int aday) {
-		day = aday;
+// 4 Setters - day, year, monthInt, monthString
+	public void setDay(int day) {
+		if (day >= 1 && day <= 31)
+			this.day = day;
+		else
+			System.out.println("Error in input data");
 	}
 
-	public void setYear(int aYear) {
-		year = aYear;
+	public void setYear(int year) {
+		if (year >= 1000 && year <= 9999)
+			this.year = year;
+		else
+			System.out.println("Error in input data");
 	}
 
-	public void setMonth(int iMonth) {
-		if (iMonth < 1 || iMonth > 12) {
-			System.out.println("Enter data is not with in the date range");
-			System.exit(0);
-		} else {
-			switch (iMonth) {
-			case 1:
-				month = "January";
-				break;
-			case 2:
-				month = "Februrary";
-				break;
-			case 3:
-				month = "March";
-				break;
-			case 4:
-				month = "April";
-				break;
-			case 5:
-				month = "May";
-				break;
-			case 6:
-				month = "June";
-				break;
-			case 7:
-				month = "July";
-				break;
-			case 8:
-				month = "August";
-				break;
-			case 9:
-				month = "September";
-				break;
-			case 10:
-				month = "October";
-				break;
-			case 11:
-				month = "November";
-				break;
-			case 12:
-				month = "December";
-				break;
-			}
+	public void setMonth(int monthInt) {
+		if (monthInt >= 1 && monthInt <= 12)
+			this.month = monthStr(monthInt);
+		else
+			System.out.println("Error in input data");
+	}
 
+	public void setMonth(String monthString) {
+		if (validateMonthStr(monthString))
+			this.month = monthString;
+		else
+			System.out.println("Error in input data");
+	}
+
+//Validates monthString
+	public boolean validateMonthStr(String monthString) {
+		String[] validMonths = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
+				"October", "November", "December" };
+		for (int i = 0; i < 12; i++) {
+			if (monthString.equalsIgnoreCase(validMonths[i]))
+				return true;
 		}
-
+		return false;
 	}
 }
-/*
- * // Method to validate date public int inputDateOK() {
- * 
- * boolean dayCheck = in.hasNextInt(); if (!dayCheck) {
- * System.out.println("Entered date is not an integer"); System.exit(0); } else
- * { day = in.nextInt(); if (day >= 1 && day <= 31) { dayCheck = false; } else {
- * System.out.println("Entered date is not an integer between 1 and 31");
- * System.exit(0); } } return day; }
- * 
- * // Method to validate month public String inputMonthOK() {
- * 
- * String[] validMonths = { "January", "Feburary", "March", "April", "May",
- * "June", "July", "August", "September", "October", "November", "December" };
- * boolean monthCheck = in.hasNext(); boolean flag = false; if (!monthCheck) {
- * System.out.println("Entered month is not a string"); System.exit(0); } else {
- * month = in.next(); for (int i = 0; i < 12; i++) { if
- * (month.equalsIgnoreCase(validMonths[i])) { monthCheck = false; flag = true;
- * break; } } if (!flag) { System.out.
- * println("Entered month is not a string between months January and Feburary");
- * System.exit(0); } } return month; }
- * 
- * // Method to validate year public int inputYearOK() { boolean yearCheck =
- * in.hasNextInt(); if (!yearCheck) {
- * System.out.println("Entered year is not an integer"); System.exit(0); } else
- * { year = in.nextInt(); if (year >= 1000 && day <= 9999) { yearCheck = false;
- * } else {
- * System.out.println("Entered year is not an integer between 1000 and 9999");
- * System.exit(0); } } return year; }
- */
