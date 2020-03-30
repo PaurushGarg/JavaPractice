@@ -4,64 +4,167 @@ public class Date {
 	private String month;
 	private int year;
 
+	// Constructors
 // Constructor-1 (without parameters) initialise date to a default value (day, month and year)
 	public Date() {
-		day = 27;
-		month = "June";
-		year = 1990;
+		day = 5;
+		month = "October";
+		year = 2019;
 	}
 
 // Constructor-2 (monthString, day, year) Validate and Initialise the properties (date) (day, month and year)- if validated
 	public Date(String monthString, int day, int year) {
-		setDate(monthString, day, year); // Validates and sets the properties
+		if (dateOK(monthString, day, year)) // Validates and prints error
+			setDateWOValidation(monthString, day, year); // sets the properties (without validation)
 	}
 
 // Constructor-3 (monthInt, day, year) Validate and Initialise the properties.
 	public Date(int monthInt, int day, int year) {
-		setDate(monthInt, day, year); // Convert monthInt to monthString, validate, and set the properties
+		if (dateOK(monthInt, day, year)) // Validates and prints error
+			setDate(monthInt, day, year); // Convert month to String, and set the properties (without validation)
 	}
 
+	// Validators
 // Validate date (monthString, day, year)
 	public boolean validateDate(String monthString, int day, int year) {
 		if (day < 1 || day > 31)
 			return false;
 		if (year < 1000 || year > 9999)
 			return false;
-		if (month.equalsIgnoreCase("February") && (day > 29)) // 29 is true if it is leap year- Special method is dateOK
-			return false;
 		if (!validateMonthStr(monthString))
+			return false;
+		if (monthString.equalsIgnoreCase("February") && (day > 29))
 			return false;
 		return true;
 	}
 
 // Validate date (montInt, day, year)
 	public boolean validateDate(int monthInt, int day, int year) {
-		boolean state = false;
 		if (monthInt < 1 || monthInt > 12)
-			return state;
+			return false;
 		if (day < 1 || day > 31)
-			return state;
+			return false;
 		if (year < 1000 || year > 9999)
-			return state;
-		if (monthInt == 2 && day > 29) // 29 is true if it is leap year- Special method is dateOK
-			return state;
-		return !state;
+			return false;
+		if (monthInt == 2 && day > 29)
+			return false;
+		return true;
 	}
 
+// Validates date (monthString)- "validateDate" plus check for leap year (if day = 29, monthString = February, and leapYear- date is OK)
+	private boolean dateOK(String monthString, int day, int year) {
+		boolean valid = validateDate(monthString, day, year);
+		boolean leapY = leapYear(year);
+		boolean errorFlag = !valid || (valid && monthString.equalsIgnoreCase("February") && day == 29 && !leapY);
+		if (errorFlag) {
+			inputError(); // Printing error (and exit) when validation fails
+		}
+		return true;
+
+		// if (valid && leapY && monthString.equalsIgnoreCase("February") && day == 29)
+		// return true;
+
+	}
+
+// Validates date (monthInt)- "validateDate" + error print + check for leap year 
+	private boolean dateOK(int monthInt, int day, int year) {
+		boolean valid = validateDate(monthInt, day, year);
+		boolean leapY = leapYear(year);
+		boolean errorFlag = !valid || (valid && monthInt == 2 && day == 29 && !leapY);
+		if (valid && leapY && monthInt == 2 && day == 29)
+			return true;
+		if (errorFlag)
+			inputError(); // Printing error (and exit) when validation fails
+		return valid;
+	}
+
+// Getters
+	// 4 Getters - day, year, monthInt, and monthString
+	public int getDay() {
+		return this.day;
+	}
+
+	public int getYear() {
+		return this.year;
+	}
+
+	public int getMonth() { // Returns monthInt and not monthString
+		return iMonth(this.month);
+	}
+
+	public String getmonthString() { // Returns monthString
+		return this.month;
+	}
+
+	// Setters or Mutators
+// Setter- Sets the date (monthInt, day, year)
+	public void setDate(int monthInt, int day, int year) {
+		if (dateOK(monthInt, day, year)) // Validates date and prints error
+			setDateWOValidation(monthInt, day, year); // Sets properties without validation
+	}
+
+// Setter- Sets the date (monthString, day, year)
+	public void setDate(String monthString, int day, int year) {
+		if (dateOK(monthString, day, year)) // Validates date and prints error
+			setDateWOValidation(monthString, day, year); // Sets properties without validation
+	}
+
+// 4 Setters - one for each: day, year, monthInt, and  monthString
+	public void setDay(int day) {
+		if (day >= 1 && day <= 31)
+			this.day = day;
+		else
+			inputError();
+	}
+
+	public void setYear(int year) {
+		if (year >= 1000 && year <= 9999)
+			this.year = year;
+		else
+			inputError();
+	}
+
+	public void setMonth(int monthInt) {
+		if (monthInt >= 1 && monthInt <= 12)
+			this.month = monthString(monthInt);
+		else
+			inputError();
+	}
+
+	public void setMonth(String monthString) {
+		if (validateMonthStr(monthString))
+			this.month = monthString;
+		else
+			inputError();
+	}
+
+	// Other functions required in Assignment
 // Return true when other date has the same day, month and year. month is in string format.
 	public boolean equals(Date otherDate) {
-		boolean state = false;
 		if (this.day != otherDate.day)
-			return state;
+			return false;
 		if (this.year != otherDate.year)
-			return state;
+			return false;
 		if (!this.month.equalsIgnoreCase(otherDate.month))
-			return state;
-		return !state;
+			return false;
+		return true;
+	}
+
+// Return true when this date is more senior than other date
+	public boolean isSenior(Date otherDate) {
+		if (this.getYear() < otherDate.getYear())
+			return true;
+		if (this.getYear() == otherDate.getYear()) {
+			if (this.getMonth() < otherDate.getMonth())
+				return true;
+			else if (this.getMonth() == otherDate.getMonth() && this.getDay() < otherDate.getDay())
+				return true;
+		}
+		return false;
 	}
 
 // Converts monthInt to monthString (example 1 to January, and so on)
-	private String monthStr(int monthInt) {
+	private String monthString(int monthInt) {
 		String monthString = "";
 		switch (monthInt) {
 		case 1:
@@ -134,103 +237,38 @@ public class Date {
 		return monthInt;
 	}
 
-// Validates date (monthString)- "validateDate" plus check for leap year (if day = 29, monthString = February, and leapYear- date is OK)
-	private boolean dateOK(String monthString, int day, int year) {
-		boolean valid = validateDate(monthString, day, year);
-		if (valid && monthString.equalsIgnoreCase("February")) { // check for leap year if February
-			boolean leapYear = false;
-			if ((year % 4) == 0 && (year % 100) != 0)
-				leapYear = true;
-			if ((year % 100 == 0) && (year % 400 == 0))
-				leapYear = true;
-			if ((!leapYear) && (day == 29)) // return false- if its not a leap year and day is 29 in February
-				valid = false;
-		}
-		return valid;
+	// Helping functions (made locally- not needed for assignment)
+// Sets date- without validation
+	private void setDateWOValidation(String monthString, int day, int year) {
+		this.month = monthString;
+		this.day = day;
+		this.year = year;
 	}
 
-// Validates date (monthInt)- "validateDate" plus check for leap year (if day = 29, monthInt = 2, and leapYear- date is OK)
-	private boolean dateOK(int monthInt, int day, int year) {
-		boolean valid = validateDate(monthInt, day, year);
-		if (valid && (monthInt == 2)) { // check for leap year if monthInt = 2
-			boolean leapYear = false;
-			if ((year % 4) == 0 && (year % 100) != 0)
-				leapYear = true;
-			if ((year % 100 == 0) && (year % 400 == 0))
-				leapYear = true;
-			if ((!leapYear) && (day == 29)) // return false- if its not a leap year and day is 29 in February
-				valid = false;
-		}
-		return valid;
+	private void setDateWOValidation(int monthInt, int day, int year) {
+		String monthString = monthString(monthInt); // Convert monthInt to monthString
+		this.month = monthString; // initialise
+		this.day = day;
+		this.year = year;
 	}
 
-// Setter- Sets the date (monthInt, day, year)
-	public void setDate(int monthInt, int day, int year) {
-		boolean valid = validateDate(monthInt, day, year); // Validates date
-		if (valid == true) { // If valid- initialise, else print error
-			String monthString = monthStr(monthInt); // Convert monthInt to monthString
-			this.month = monthString; // initialise
-			this.day = day;
-			this.year = year;
-		} else
-			System.out.println("Error in input data");
+// Print error and exit system
+	private void inputError() {
+		System.out.println("Error in input data");
+		System.exit(0);
 	}
 
-// Setter- Sets the date (monthString, day, year)
-	public void setDate(String monthString, int day, int year) {
-		boolean valid = validateDate(monthString, day, year); // Validates date
-		if (valid == true) { // If valid, else print error
-			this.month = monthString;
-			this.day = day;
-			this.year = year;
-		} else
-			System.out.println("Error in input data");
+// Check for leap year (monthInt)
+	private boolean leapYear(int year) {
+		if ((year % 4) == 0 && (year % 100) != 0)
+			return true;
+		if ((year % 100 == 0) && (year % 400 == 0))
+			return true;
+		return false;
 	}
 
-// 3 Getters - day, year, and monthInt
-	public int getDay() {
-		return this.day;
-	}
-
-	public int getYear() {
-		return this.year;
-	}
-
-	public int getMonth() { // Returns monthInt and not monthString
-		return iMonth(this.month);
-	}
-
-// 4 Setters - day, year, monthInt, monthString
-	public void setDay(int day) {
-		if (day >= 1 && day <= 31)
-			this.day = day;
-		else
-			System.out.println("Error in input data");
-	}
-
-	public void setYear(int year) {
-		if (year >= 1000 && year <= 9999)
-			this.year = year;
-		else
-			System.out.println("Error in input data");
-	}
-
-	public void setMonth(int monthInt) {
-		if (monthInt >= 1 && monthInt <= 12)
-			this.month = monthStr(monthInt);
-		else
-			System.out.println("Error in input data");
-	}
-
-	public void setMonth(String monthString) {
-		if (validateMonthStr(monthString))
-			this.month = monthString;
-		else
-			System.out.println("Error in input data");
-	}
-
-//Validates monthString
-	public boolean validateMonthStr(String monthString) {
+// Validates monthString
+	private boolean validateMonthStr(String monthString) {
 		String[] validMonths = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
 				"October", "November", "December" };
 		for (int i = 0; i < 12; i++) {
